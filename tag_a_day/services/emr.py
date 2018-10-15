@@ -13,10 +13,12 @@ class EMRTagHandler(Service):
         for emr_page in emr.get_paginator('list_clusters').paginate():
             # Randomly pick 2/3rds of the nodes
             for cluster_summary in self._random_choose(emr_page['Clusters']):
-                cluster = emr.describe_cluster(ClusterId=cluster_summary['Id']).get('Cluster')
+                cluster = emr.describe_cluster(
+                    ClusterId=cluster_summary['Id']).get('Cluster')
 
                 # Get VPC info
-                subnet = self._cache.subnet(cluster['Ec2InstanceAttributes']['Ec2SubnetId'], region)
+                subnet = self._cache.subnet(
+                    cluster['Ec2InstanceAttributes']['Ec2SubnetId'], region)
                 _, vpc_name, vpc = self._get_vpc_info(
                     vpc_id=subnet.vpc_id,
                     region=region
@@ -34,7 +36,8 @@ class EMRTagHandler(Service):
                 ))
 
                 if any(missing_tags):
-                    print(self.missing_tags_text.format("','".join(missing_tags)))
+                    print(self.missing_tags_text.format(
+                        "','".join(missing_tags)))
 
                     # Build padding for easier to read prompt
                     longest_key = len(max(missing_tags, key=len))
@@ -42,7 +45,8 @@ class EMRTagHandler(Service):
 
                     new_tags = {}
                     for tag_key in missing_tags:
-                        new_tag_value = prompt(self.prompt_text.format(tag_key).ljust(justify_length))
+                        new_tag_value = prompt(self.prompt_text.format(
+                            tag_key).ljust(justify_length))
                         new_tags[tag_key] = new_tag_value
 
                     for new_tag_key, new_tag_value in new_tags.items():

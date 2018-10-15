@@ -12,4 +12,5 @@ class NumberRangeValidator(Validator):
             for i, c in enumerate(text):
                 if not c.isdigit():
                     break
-            raise ValidationError(message='Please enter a number', cursor_position=i)
+            raise ValidationError(
+                message='Please enter a number', cursor_position=i)

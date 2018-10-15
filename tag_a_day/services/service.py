@@ -32,7 +32,8 @@ class Service(object):
 
         # Compute missing tags
         instance_tags = [tag['Key'] for tag in tags]
-        missing_tags = [tag for tag in expected_tags if tag not in instance_tags]
+        missing_tags = [
+            tag for tag in expected_tags if tag not in instance_tags]
 
         return instance_info, missing_tags
 

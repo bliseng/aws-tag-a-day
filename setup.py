@@ -15,11 +15,13 @@ setup(
         'hconf',
         'pyyaml'
     ],
+    setup_requires=["pytest-runner"],
+    tests_require=["pytest"],
     entry_points={
         'console_scripts': [
             'tag-a-day = tag_a_day.cli:run'
         ],
-        'tag_a_day': [
+        'tag_a_day.tag_handlers': [
             'ec2 = tag_a_day.services.ec2:EC2TagHandler',
             'rds = tag_a_day.services.rds:RDSTagHandler',
             's3 = tag_a_day.services.s3:S3TagHandler',

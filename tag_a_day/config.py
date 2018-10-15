@@ -1,12 +1,6 @@
 import os
 
 import hconf
-import yaml
-
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
 
 
 class Configuration(hconf.ConfigManager):
@@ -21,15 +15,20 @@ class Configuration(hconf.ConfigManager):
         self._session = session
         super().__init__(
             {'name': 'regions', 'default': [],
-             'required': False, 'cast': self.process_list, 'description': 'List of regions to check tags in'},
+             'required': False, 'cast': self.process_list,
+             'description': 'List of regions to check tags in'},
             {'name': 'services', 'default': [],
-             'required': False, 'cast': self.process_list, 'description': 'List of Services to check tags on'},
+             'required': False, 'cast': self.process_list,
+             'description': 'List of Services to check tags on'},
             {'name': 'required-tags',
-             'required': True, 'cast': self.process_list, 'description': 'List of tags which must exist'},
+             'required': True, 'cast': self.process_list,
+             'description': 'List of tags which must exist'},
             {'name': 'dynamodb-table-name',
-             'required': True, 'description': 'Name of DynamoDB table to write tagging proposals to'},
+             'required': True,
+             'description': 'Name of DynamoDB table to write tagging proposals to'},
             {'name': 'dynamodb-table-region',
-             'required': True, 'description': 'Region the DynamoDB table exists in'},
+             'required': True,
+             'description': 'Region the DynamoDB table exists in'},
         )
 
         self.registerParser(hconf.Subparsers.YAML(

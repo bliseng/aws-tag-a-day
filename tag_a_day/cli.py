@@ -1,7 +1,4 @@
-import sys
-
 from boto3 import Session
-from tabulate import tabulate
 
 from tag_a_day.cache import AWSCache
 from tag_a_day.config import Configuration
