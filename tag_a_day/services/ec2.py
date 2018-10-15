@@ -1,6 +1,3 @@
-from typing import Iterable
-from boto3 import Session
-
 from tag_a_day.services.service import Service
 
 
@@ -12,7 +9,7 @@ class EC2TagHandler(Service):
     name = 'ec2_instance'
     missing_tags_text = "This instance is missing '{0}' in its tags."
 
-    def resources(self, session: Session) -> Iterable:
+    def resources(self, session):
         return session.resource('ec2').instances.all()
 
     def handler(self, instance, expected_tags, region, session, cache, proposals):
