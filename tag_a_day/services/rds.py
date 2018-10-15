@@ -1,3 +1,7 @@
+from typing import Iterable
+
+from boto3 import Session
+
 from tag_a_day.services.service import Service
 
 
@@ -5,7 +9,7 @@ class RDSTagHandler(Service):
     name = 'rds_instance'
     missing_tags_text = "This instance is missing '{0}' in its tags"
 
-    def resources(self, session):
+    def resources(self, session: Session) -> Iterable:
         rds = session.client('rds')
         paginator = rds. \
             get_paginator('describe_db_instances'). \
@@ -29,6 +33,10 @@ class RDSTagHandler(Service):
         instance_info, missing_tags = \
             self._build_tag_sets(expected_tags, evaluated_tags, instance['Tags'])
 
+        if self._progress.has_finished(instance['DbiResourceId'], expected_tags):
+            self._skip(instance['DbiResourceId'])
+            return
+
         if any(missing_tags):
             self._print_table(
                 ("Vpc", vpc_name),
@@ -36,10 +44,6 @@ class RDSTagHandler(Service):
                 ("DatabaseARN", instance['DBInstanceArn']),
                 *instance_info
             )
-
-            if self._progress.has_finished(instance['DbiResourceId'], expected_tags):
-                self._skip(instance['DbiResourceId'])
-                return
 
             tag_prompt = self._build_tag_prompt(missing_tags)
             for tag_key in missing_tags:

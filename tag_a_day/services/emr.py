@@ -1,3 +1,7 @@
+from typing import Iterable
+
+from boto3 import Session
+
 from tag_a_day.services.service import Service
 
 
@@ -5,7 +9,7 @@ class EMRTagHandler(Service):
     name = 'emr_cluster'
     missing_tags_text = "This EMR cluster is missing '{0}' in its tags."
 
-    def resources(self, session):
+    def resources(self, session: Session) -> Iterable:
         emr = session.client('emr')
         for emr_page in emr.get_paginator('list_clusters').paginate():
             for cluster_summary in self._random_choose(emr_page['Clusters']):
@@ -29,6 +33,10 @@ class EMRTagHandler(Service):
         instance_info, missing_tags = \
             self._build_tag_sets(expected_tags, evaluated_tags, cluster['Tags'])
 
+        if self._progress.has_finished(cluster['Id'], expected_tags):
+            self._skip(cluster['Id'])
+            return
+
         if any(missing_tags):
             self._print_table(
                 ("Vpc", vpc_name),
@@ -36,10 +44,6 @@ class EMRTagHandler(Service):
                 ("ClusterID", cluster['Id']),
                 *instance_info
             )
-
-            if self._progress.has_finished(cluster['Id'], expected_tags):
-                self._skip(cluster['Id'])
-                return
 
             tag_prompt = self._build_tag_prompt(missing_tags)
             for tag_key in missing_tags:

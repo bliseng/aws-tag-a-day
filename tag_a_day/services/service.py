@@ -1,6 +1,8 @@
 import abc
 from operator import itemgetter
+from typing import Iterable
 
+from boto3 import Session
 from prompt_toolkit import prompt
 from tabulate import tabulate
 
@@ -90,7 +92,7 @@ class Service(object):
                     print("\n\n")
 
     @abc.abstractmethod
-    def resources(self, session):
+    def resources(self, session: Session) -> Iterable:
         raise NotImplementedError
 
     @abc.abstractmethod
