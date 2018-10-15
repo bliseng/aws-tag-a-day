@@ -13,7 +13,7 @@ class Configuration(hconf.ConfigManager):
 
     def __init__(self, session):
         self._session = session
-        super().__init__(
+        super(Configuration, self).__init__(
             {'name': 'regions', 'default': [],
              'required': False, 'cast': self.process_list,
              'description': 'List of regions to check tags in'},
@@ -40,7 +40,7 @@ class Configuration(hconf.ConfigManager):
         )
 
     def parse(self):
-        cfg = super().parse()
+        cfg = super(Configuration, self).parse()
         self._process_defaults(cfg)
         return cfg
 

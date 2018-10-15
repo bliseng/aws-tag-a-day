@@ -1,13 +1,14 @@
+import io
 from setuptools import setup, find_packages
-
 from os import path
+
 this_directory = path.abspath(path.dirname(__file__))
-with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
+with io.open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
     name='aws-tag-a-day',
-    version='0.1.3',
+    version='0.1.5',
     packages=find_packages(exclude=('tests',)),
     description='A tool for simplifying swarming of fixing AWS tags',
     long_description=long_description,
@@ -23,7 +24,7 @@ setup(
         'pyyaml',
         'boto3'
     ],
-    setup_requires=["pytest-runner","twine","wheel"],
+    setup_requires=["pytest-runner", "twine", "wheel"],
     tests_require=["pytest"],
     entry_points={
         'console_scripts': [

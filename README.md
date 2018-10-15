@@ -66,3 +66,87 @@ __NOTE__: Steps 4 and 5 are not yet implemented by this utility.
 
 ## Extending
 `aws-tag-a-day` is built on a plugin architecture, using `entry_point` in [`setuptools`](https://setuptools.readthedocs.io/en/latest/setuptools.html).
+
+To add more TagHandlers, you can either add classes to this repo, or create a new python package with its
+own setup.py, and hook into the plugin architecture using the `tag_a_day.tag_handlers` entrypoint.
+
+1. Create a new class, inheriting from `tag_a_day.services.service.Service`
+   ```python
+   from tag_a_day.services.service import Service
+   
+   class CustomTagHandler(Service): pass
+   ```
+
+2. Set a unique name for the Tag handler
+   ```python
+   from tag_a_day.services.service import Service
+   
+   class CustomTagHandler(Service):
+      name='custom_handler'
+   ```
+
+3. Create two stub methods, `resources` and `handler` matching the signatures below:
+   ```python
+   from tag_a_day.services.service import Service
+    
+   class VpcTagHandler(Service):
+      name='ec2_vpc'
+   
+      def resources(self, session):
+        pass
+   
+      def handler(self, resource, expected_tags, region, session, cache, proposals):
+        pass
+   ```
+
+4. Implement `resources(...)` to return an iterable. If using boto3 resources,
+this should look like:
+   ```python
+     def resources(self, session):
+       return session.resource('ec2').vpc.all()
+   ```
+   If using boto3 client, don't forget to implement pagination, and should look like:
+   ```python
+     def resources(self, session):
+       ec2 = session.client('ec2')
+       paginator = ec2.get_paginator('describe_vpcs')
+    
+       for page in paginator.paginate():
+         for vpc in page:
+           yield vpc 
+   ```
+   
+5. Implement `handle(...)` to yield a payload describing the tag proposal (example is using boto3.resources):
+    ```python
+      def handle(self, vpc, expected_tags, region, session, cache, proposals):
+        # This boilerplate logic will handle checking the tags which have already been
+        # evaluated for this user.
+        evaluated_tags = self._progress.evaluated_tags(vpc.vpc_id)
+        vpc_info, missing_tags = \
+            self._build_tag_sets(expected_tags, evaluated_tags, vpc.tags)
+
+        # Check if the user has proposed values for all the missing tags 
+        if self._progress.has_finished(vpc.vpc_id, expected_tags):
+            # Print a skip message
+            self._skip(vpc.vpc_id)
+            return
+         
+        if any(missing_tags):
+          # Print information about this resource, which could be useful 
+          # to provide context around tagging.
+          self._print_table(
+            ("VpcID", vpc.vpc_id),
+            *vpc_info
+          )
+
+          # Build our user prompt to ask for new tags
+          tag_prompt = self._build_tag_prompt(missing_tags)
+          for tag_key in missing_tags:
+            # Yield a proposal for a new tag key/value pair for the given
+            # resource id.
+            yield {
+              'resource_id': vpc.vpc_id,
+              'tag_key': tag_key,
+              'tag_value': tag_prompt(tag_key),
+            }
+    ```

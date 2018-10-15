@@ -1,6 +1,3 @@
-from typing import Iterable
-from boto3 import Session
-
 from tag_a_day.services.service import Service
 
 
@@ -8,7 +5,7 @@ class S3TagHandler(Service):
     name = 's3'
     missing_tags_text = "This bucket is missing '{0}' in its tags."
 
-    def resources(self, session: Session) -> Iterable:
+    def resources(self, session):
         return session.resource('s3').buckets.all()
 
     def handler(self, bucket, expected_tags, region, session, cache, proposals):
