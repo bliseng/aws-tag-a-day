@@ -53,6 +53,13 @@ __NOTE__: Steps 4 and 5 are not yet implemented by this utility.
 
 ## Reference
 
+### Supported Services
+
+ - [emr](./blob/master/tag_a_day/services/emr.py)
+ - [ec2](./blob/master/tag_a_day/services/ec2.py)
+ - [s3](./blob/master/tag_a_day/services/s3.py)
+ - [rds](./blob/master/tag_a_day/services/rds.py)
+
 ### Configuration File
 
 ### CLI options
