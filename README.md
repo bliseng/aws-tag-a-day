@@ -12,6 +12,29 @@ pip install aws-tag-a-day
 ## Quickstart
 
 ```bash
+# Generate configuration file
+mkdir -p ~/.config/tagaday/
+cat > ~/.config/tagaday/config.yml <<EOY
+dynamodb-table-name: 'tag-proposals'
+dynamodb-table-region: 'us-east-1'
+services:
+- rds
+- ec2
+- s3
+regions:
+- us-east-1
+required-tags:
+- Project
+- Owner
+- Name
+EOY
+
+# Create dynamodb table defined in the above config file.
+# If the table exists already, the utility will not overwrite it.
+tag-a-day-initialise
+
+# Start proposing tags
+tag-a-day
 
 ```
 

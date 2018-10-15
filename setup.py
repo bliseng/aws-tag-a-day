@@ -7,9 +7,10 @@ with open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='aws-tag-a-day',
-    version='0.1.2',
+    version='0.1.3',
     packages=find_packages(exclude=('tests',)),
     description='A tool for simplifying swarming of fixing AWS tags',
+    long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/bliseng/aws-tag-a-day',
     license='Apache2',
