@@ -1,4 +1,8 @@
 *.pyc
-\.idea/
-
-venv/
+.idea
+.pytest_cache
+/venv
+\.eggs/
+aws_tag_a_day\.egg-info/
+build/
+dist/

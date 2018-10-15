@@ -28,7 +28,7 @@ class Configuration(hconf.ConfigManager):
              'description': 'Name of DynamoDB table to write tagging proposals to'},
             {'name': 'dynamodb-table-region',
              'required': True,
-             'description': 'Region the DynamoDB table exists in'},
+             'description': 'Region the DynamoDB table exists in'}
         )
 
         self.registerParser(hconf.Subparsers.YAML(
