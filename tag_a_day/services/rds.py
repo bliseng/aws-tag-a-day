@@ -1,6 +1,3 @@
-from prompt_toolkit import prompt
-from tabulate import tabulate
-
 from tag_a_day.services.service import Service
 
 
@@ -8,7 +5,7 @@ class RDSTagHandler(Service):
     name = 'rds_instance'
     missing_tags_text = "This instance is missing '{0}' in its tags"
 
-    def handler(self, expected_tags, region, session, cache, proposals):
+    def resources(self, session):
         rds = session.client('rds')
         paginator = rds. \
             get_paginator('describe_db_instances'). \
@@ -16,44 +13,38 @@ class RDSTagHandler(Service):
         for instances_page in paginator:
             # Randomly pick 2/3rds of the nodes
             for instance in self._random_choose(instances_page['DBInstances']):
-
-                # Get VPC info
-                _, vpc_name, vpc = self._get_vpc_info(
-                    vpc_id=instance['DBSubnetGroup']['VpcId'],
-                    region=region
-                )
-
-                # Build table for displaying instance information
-                tags = rds.list_tags_for_resource(
+                instance['Tags'] = rds.list_tags_for_resource(
                     ResourceName=instance['DBInstanceArn']).get('TagList')
-                instance_info, missing_tags = \
-                    self._build_tag_sets(expected_tags, tags)
+                yield instance
 
-                print(tabulate(
-                    [
-                        ("Vpc", vpc_name),
-                        ("VpcID", vpc.id),
-                        ("DatabaseARN", instance['DBInstanceArn']),
-                    ] + instance_info
-                ))
+    def handler(self, instance, expected_tags, region, session, cache, proposals):
+        # Get VPC info
+        _, vpc_name, vpc = self._get_vpc_info(
+            vpc_id=instance['DBSubnetGroup']['VpcId'],
+            region=region
+        )
 
-                if any(missing_tags):
-                    print(self.missing_tags_text.format(
-                        "','".join(missing_tags)))
+        # Build table for displaying instance information
+        evaluated_tags = self._progress.evaluated_tags(instance['DbiResourceId'])
+        instance_info, missing_tags = \
+            self._build_tag_sets(expected_tags, evaluated_tags, instance['Tags'])
 
-                    # Build padding for easier to read prompt
-                    longest_key = len(max(missing_tags, key=len))
-                    justify_length = len(self.prompt_text) + longest_key
+        if any(missing_tags):
+            self._print_table(
+                ("Vpc", vpc_name),
+                ("VpcID", vpc.id),
+                ("DatabaseARN", instance['DBInstanceArn']),
+                *instance_info
+            )
 
-                    new_tags = {}
-                    for tag_key in missing_tags:
-                        new_tag_value = prompt(self.prompt_text.format(
-                            tag_key).ljust(justify_length))
-                        new_tags[tag_key] = new_tag_value
+            if self._progress.has_finished(instance['DbiResourceId'], expected_tags):
+                self._skip(instance['DbiResourceId'])
+                return
 
-                    for new_tag_key, new_tag_value in new_tags.items():
-                        yield {
-                            'resource_id': instance.id,
-                            'tag_key': new_tag_key,
-                            'tag_value': new_tag_value,
-                        }
+            tag_prompt = self._build_tag_prompt(missing_tags)
+            for tag_key in missing_tags:
+                yield {
+                    'resource_id': instance['DbiResourceId'],
+                    'tag_key': tag_key,
+                    'tag_value': tag_prompt(tag_key),
+                }

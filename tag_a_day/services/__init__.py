@@ -9,10 +9,10 @@ class Services(object):
             'cache': cache
         }
         self._mapping = list(map(
-            lambda ep: ep.load()(**init_params),
+            lambda ep: ep.load()(**init_params).load(),
             filter(
                 lambda ep: ep.name in services,
-                iter_entry_points(group='tag_a_day', name=None)
+                iter_entry_points(group='tag_a_day.tag_handlers', name=None)
             )
         ))
 

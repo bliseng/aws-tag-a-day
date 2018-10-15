@@ -1,3 +1,6 @@
+from boto3.dynamodb.conditions import Key
+
+
 class AWSCache(object):
     def __init__(self, session_function):
         self._session = lambda region: session_function(region)
@@ -27,3 +30,35 @@ class AWSCache(object):
     def _get_cache(self, cache_id, object_id):
         cache = self._cache(cache_id)
         return cache.get(object_id, None)
+
+
+class ProgressCache(object):
+    def __init__(self, table, proposer, resource_type):
+        self._proposals = table
+        self._proposer = proposer
+        self._resource_type = resource_type
+        self._progress_items = []
+
+    def load(self):
+        result = self._proposals.query(
+            TableName=self._proposals.table_name,
+            IndexName='proposer-resource_type',
+            KeyConditionExpression=Key('proposer').eq(self._proposer) & Key('resource_type').eq(self._resource_type)
+        )
+        for item in result['Items']:
+            del item['proposer']
+            del item['resource_type']
+            self._progress_items.append(item)
+        return self
+
+    def has_finished(self, resource_id, tag_names):
+        evaluated_tags = self.evaluated_tags(resource_id)
+        return set(tag_names) == set(evaluated_tags)
+
+    def evaluated_tags(self, resource_id):
+        return list(map(
+            lambda r: r['tag_key'],
+            filter(
+                lambda r: r['resource_id'] == resource_id,
+                self._progress_items)
+        ))
