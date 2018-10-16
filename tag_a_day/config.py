@@ -15,6 +15,8 @@ class Configuration(hconf.ConfigManager):
 
     def __init__(self, session):
         self._session = session
+        profile_dir = os.path.expanduser(os.path.join('~', '.config', 'tagaday', ''))
+
         super(Configuration, self).__init__(
             {'name': 'regions', 'default': [],
              'required': False, 'cast': self.process_list,
@@ -33,15 +35,22 @@ class Configuration(hconf.ConfigManager):
              'description': 'Name of DynamoDB table to write tagging proposals to'},
             {'name': 'dynamodb-table-region',
              'required': True,
-             'description': 'Region the DynamoDB table exists in'}
+             'description': 'Region the DynamoDB table exists in'},
+            {'name': 'profile', 'default': 'config.yml',
+             'required': False,
+             'description': 'Tagging profile to load. This is the filename defined in `--profile-path`. Default: \'config\''},
+            {'name': 'profile-path', 'default': profile_dir,
+             'required': False,
+             'description': 'Path to directory containing the tagging profiles to load. Default: \'' +
+                            profile_dir + '\''}
         )
-
-        self.registerParser(hconf.Subparsers.YAML(
-            filename="config.yml", filepath=os.path.expanduser('~/.config/tagaday/')
-        ))
 
         self.registerParser(hconf.Subparsers.Cmdline(
             'Tool to work through AWS and tag instances'
+        ))
+
+        self.registerParser(hconf.Subparsers.YAML(
+            filepathConfig='profile_path', filenameConfig='profile',
         ))
 
     def parse(self):
