@@ -169,11 +169,9 @@ this should look like:
     setup(
       ...,
       entry_points={
-        ...,
         'tag_a_day.tag_handlers': [
-          ...,
-          'vpc = my_package.my_module:VPCTagHandler'
-        ]
+          'vpc = my_package.my_module:VPCTagHandler',
+        ],
       }
     )
  
