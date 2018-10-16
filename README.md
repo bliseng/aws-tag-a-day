@@ -69,6 +69,8 @@ __NOTE__: Steps 4 and 5 are not yet implemented by this utility.
 | `required-tags:`         | List   | `--required-tags`         | Comma separated string | List of tags which must be present on all resources                                                                                                                              |
 | `dynamodb-table-name:`   | String | `--dynamodb-table-name`   | String                 | Name of the DynamoDB table to propose tags to. If used in conjunction with `tag-a-day-initialise`, this will be the DynamoDB table to be created.                                |
 | `dynamodb-table-region:` | String | `--dynamodb-table-region` | String                 | AWS Region in which to look for `--dynamodb-table-name`. If used in conjunction with `tag-a-day-initialise` this will be the region which the DynamoDB table will be created in. |
+|                          |        | `--resource-ids`          | Comma separated string | List of resource ids, to filter only for specific resources to propose tags for.                                                                                                 |
+
 ## Extending
 `aws-tag-a-day` is built on a plugin architecture, using `entry_point` in [`setuptools`](https://setuptools.readthedocs.io/en/latest/setuptools.html).
 
