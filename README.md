@@ -161,3 +161,21 @@ this should look like:
               'tag_value': tag_prompt(tag_key),
             }
     ```
+    
+6. Finally, add the entrypoint by extending `setup.py`:
+    ```python
+    from setuptools import setup
+
+    setup(
+      ...,
+      entry_points={
+        ...,
+        'tag_a_day.tag_handlers': [
+          ...,
+          'vpc = my_package.my_module:VPCTagHandler'
+        ]
+      }
+    )
+ 
+
+```
