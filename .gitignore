@@ -6,3 +6,5 @@
 aws_tag_a_day\.egg-info/
 build/
 dist/
+.vagrant
+Vagrantfile

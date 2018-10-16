@@ -8,7 +8,7 @@ with io.open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='aws-tag-a-day',
-    version='0.1.5',
+    version='0.1.6',
     packages=find_packages(exclude=('tests',)),
     description='A tool for simplifying swarming of fixing AWS tags',
     long_description=long_description,
@@ -19,12 +19,12 @@ setup(
     author_email='drew.sonne@gmail.com',
     install_requires=[
         'tabulate',
-        'prompt_toolkit ',
         'hconf',
         'pyyaml',
-        'boto3'
+        'boto3',
+        'setuptools>=13'
     ],
-    setup_requires=["pytest-runner", "twine", "wheel"],
+    setup_requires=["pytest-runner", "twine", "wheel", 'setuptools>=13'],
     tests_require=["pytest"],
     entry_points={
         'console_scripts': [

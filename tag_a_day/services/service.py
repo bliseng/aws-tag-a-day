@@ -1,11 +1,14 @@
 import abc
+import sys
 from operator import itemgetter
-
-from prompt_toolkit import prompt
 from tabulate import tabulate
-
 from tag_a_day.cache import ProgressCache
 from tag_a_day.log import logger
+
+try:
+    input = raw_input
+except NameError:
+    pass
 
 
 class Service(object):
@@ -58,7 +61,7 @@ class Service(object):
         print(self.skip_text.format(resource_id))
 
     def _build_tag_prompt(self, missing_tags):
-        print(self.missing_tags_text.format(
+        sys.stdout.write(self.missing_tags_text.format(
             "','".join(missing_tags)))
 
         # Build padding for easier to read prompt
@@ -66,8 +69,10 @@ class Service(object):
         justify_length = len(self.prompt_text) + longest_key
 
         def tag_prompt(tag_key):
-            response = prompt(self.prompt_text.format(
+            sys.stdout.write(self.prompt_text.format(
                 tag_key).ljust(justify_length))
+            sys.stdout.flush()
+            response = input()
             if len(response) < 1:
                 print("Tag must not be empty")
                 return tag_prompt(tag_key)

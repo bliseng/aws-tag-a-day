@@ -28,3 +28,5 @@ class Services(object):
             return self._mapping[self._current - 1]
         else:
             raise StopIteration()
+
+    next = __next__ # Python2 backwards compatibility

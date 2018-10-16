@@ -4,9 +4,9 @@ import hconf
 
 
 class Configuration(hconf.ConfigManager):
-    DEFAULT_SERVICES = ['ec2', 's3', 'rds']
 
-    def process_list(self, data):
+    @staticmethod
+    def process_list(data):
         if type(data) == list:
             return data
         return data.split(',')
@@ -36,8 +36,8 @@ class Configuration(hconf.ConfigManager):
         ))
 
         self.registerParser(hconf.Subparsers.Cmdline(
-            'Tool to work through AWS and tag instances')
-        )
+            'Tool to work through AWS and tag instances'
+        ))
 
     def parse(self):
         cfg = super(Configuration, self).parse()
