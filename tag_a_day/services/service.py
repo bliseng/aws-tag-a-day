@@ -17,6 +17,7 @@ class Service(object):
     prompt_text = "Propose a value for the '{0}' tag: "
     skip_text = "Skipping '{0}' as it has been evaluated\n\n"
     missing_tags_text = ''
+    user_skip_prompt = 'Do you wish to propose tags for this resource? [y/N] '
 
     def __init__(self, session, table, cache, resource_id):
         self._session = session
@@ -61,6 +62,15 @@ class Service(object):
 
     def _skip(self, resource_id):
         print(self.skip_text.format(resource_id))
+
+    def _user_skip(self):
+        sys.stdout.write(self.user_skip_prompt)
+        sys.stdout.flush()
+        response = input()
+        skip = len(response) == 0
+        if skip:
+            print("\n\n")
+        return skip
 
     def _build_tag_prompt(self, missing_tags):
         sys.stdout.write((self.missing_tags_text + "\n").format(

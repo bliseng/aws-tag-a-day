@@ -52,6 +52,9 @@ class EC2TagHandler(Service):
                 *instance_info
             )
 
+            if self._user_skip():
+                return
+
             tag_prompt = self._build_tag_prompt(missing_tags)
             for tag_key in missing_tags:
                 yield {

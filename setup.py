@@ -8,7 +8,7 @@ with io.open(path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='aws-tag-a-day',
-    version='0.1.8',
+    version='0.1.9',
     packages=find_packages(exclude=('tests',)),
     description='A tool for simplifying swarming of fixing AWS tags',
     long_description=long_description,

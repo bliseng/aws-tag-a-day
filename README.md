@@ -150,6 +150,10 @@ this should look like:
             *vpc_info
           )
 
+          # Allow the user to skip auditing this resource       
+          if self._user_skip():
+            return
+
           # Build our user prompt to ask for new tags
           tag_prompt = self._build_tag_prompt(missing_tags)
           for tag_key in missing_tags:
