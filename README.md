@@ -60,10 +60,15 @@ __NOTE__: Steps 4 and 5 are not yet implemented by this utility.
  - [s3](./tag_a_day/services/s3.py)
  - [rds](./tag_a_day/services/rds.py)
 
-### Configuration File
+### Configuration File & CLI options
 
-### CLI options
-
+| Configuration File Key   | Type   | CLI Option                | Type                   | Description                                                                                                                                                                      |
+|--------------------------|--------|---------------------------|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `regions:`               | List   | `--regions`               | Comma separated string | List of regions to audit resources in                                                                                                                                            |
+| `services:`              | List   | `--services`              | Comma separated string | List of services to audit                                                                                                                                                        |
+| `required-tags:`         | List   | `--required-tags`         | Comma separated string | List of tags which must be present on all resources                                                                                                                              |
+| `dynamodb-table-name:`   | String | `--dynamodb-table-name`   | String                 | Name of the DynamoDB table to propose tags to. If used in conjunction with `tag-a-day-initialise`, this will be the DynamoDB table to be created.                                |
+| `dynamodb-table-region:` | String | `--dynamodb-table-region` | String                 | AWS Region in which to look for `--dynamodb-table-name`. If used in conjunction with `tag-a-day-initialise` this will be the region which the DynamoDB table will be created in. |
 ## Extending
 `aws-tag-a-day` is built on a plugin architecture, using `entry_point` in [`setuptools`](https://setuptools.readthedocs.io/en/latest/setuptools.html).
 
