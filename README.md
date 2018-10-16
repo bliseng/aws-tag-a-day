@@ -25,6 +25,10 @@ services:
 - emr
 regions:
 - us-east-1
+- us-west-1
+- eu-west-1
+- ap-southeast-1
+- ap-northeast-1
 required-tags:
 - Project
 - Owner
