@@ -1,12 +1,11 @@
 import sys
-import time
 
+import time
 from boto3 import Session
 from botocore.exceptions import ClientError
 
 from tag_a_day.cache import AWSCache
 from tag_a_day.config import Configuration
-from tag_a_day.log import logger
 from tag_a_day.services import Services
 
 
