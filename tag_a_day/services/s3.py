@@ -5,8 +5,17 @@ class S3TagHandler(Service):
     name = 's3'
     missing_tags_text = "This bucket is missing '{0}' in its tags."
 
-    def resources(self, session):
-        return session.resource('s3').buckets.all()
+    def resources(self, session, resource_ids):
+        s3 = session.resource('s3')
+        if resource_ids is not None:
+            for resource_id in resource_ids:
+                bucket = s3.Bucket(resource_id)
+                bucket.load()
+                if bucket.creation_date is not None:
+                    yield bucket
+        else:
+            for bucket in s3.buckets.all():
+                yield bucket
 
     def handler(self, bucket, expected_tags, region, session, cache, proposals):
         try:

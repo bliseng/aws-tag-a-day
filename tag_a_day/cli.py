@@ -29,12 +29,13 @@ def run():
         session=aws_session,
         cache=cache,
         services=conf.services,
+        resource_id=conf.resource_ids,
         proposals=table)
 
     for region in conf.regions:
         session = aws_session(region)
         for service in services:
-            logger().info(
+            print(
                 'Auditing tags for {0} in {1}'.format(service, region))
             service.run(
                 expected_tags=conf.required_tags,
@@ -133,3 +134,7 @@ def initialise():
         arn=table.table_arn,
         status=table.table_status
     ))
+
+
+if __name__ == '__main__':
+    run()

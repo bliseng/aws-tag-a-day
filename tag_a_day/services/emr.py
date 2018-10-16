@@ -1,3 +1,4 @@
+from tag_a_day.config import Configuration
 from tag_a_day.services.service import Service
 
 
@@ -5,13 +6,18 @@ class EMRTagHandler(Service):
     name = 'emr_cluster'
     missing_tags_text = "This EMR cluster is missing '{0}' in its tags."
 
-    def resources(self, session):
+    def resources(self, session, resource_ids):
         emr = session.client('emr')
-        for emr_page in emr.get_paginator('list_clusters').paginate():
-            for cluster_summary in self._random_choose(emr_page['Clusters']):
-                cluster = emr.describe_cluster(
-                    ClusterId=cluster_summary['Id']).get('Cluster')
-                yield cluster
+        if resource_ids is not None:
+            for resource in Configuration.process_list(resource_ids):
+                yield emr.describe_cluster(
+                    ClusterId=resource
+                ).get('Cluster')
+        else:
+            for emr_page in emr.get_paginator('list_clusters').paginate():
+                for cluster_summary in self._random_choose(emr_page['Clusters']):
+                    yield emr.describe_cluster(
+                        ClusterId=cluster_summary['Id']).get('Cluster')
 
     def handler(self, cluster, expected_tags, region, session, cache, proposals):
         # Get VPC info

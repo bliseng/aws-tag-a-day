@@ -7,6 +7,8 @@ class Configuration(hconf.ConfigManager):
 
     @staticmethod
     def process_list(data):
+        if data is None:
+            return data
         if type(data) == list:
             return data
         return data.split(',')
@@ -20,6 +22,9 @@ class Configuration(hconf.ConfigManager):
             {'name': 'services', 'default': [],
              'required': False, 'cast': self.process_list,
              'description': 'List of Services to check tags on'},
+            {'name': 'resource-ids',
+             'required': False,
+             'description': 'Comma separated list of resources to audit tags on'},
             {'name': 'required-tags',
              'required': True, 'cast': self.process_list,
              'description': 'List of tags which must exist'},
