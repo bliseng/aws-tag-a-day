@@ -2,6 +2,7 @@
 A tool for simplifying multiple people fixing tags by proposing a tag a day for resources with those missing tags.
 
 [![Build Status](https://travis-ci.com/bliseng/aws-tag-a-day.svg?branch=master)](https://travis-ci.com/bliseng/aws-tag-a-day)
+[![PyPI version](https://badge.fury.io/py/aws-tag-a-day.svg)](https://badge.fury.io/py/aws-tag-a-day)
 
 ## Installation
 
@@ -16,17 +17,20 @@ pip install aws-tag-a-day
 mkdir -p ~/.config/tagaday/
 cat > ~/.config/tagaday/config.yml <<EOY
 dynamodb-table-name: 'tag-proposals'
-dynamodb-table-region: 'us-east-1'
+dynamodb-table-region: 'eu-west-2'
 services:
 - rds
 - ec2
 - s3
+- emr
 regions:
 - us-east-1
 required-tags:
 - Project
 - Owner
 - Name
+- Service
+- Availability
 EOY
 
 # Create dynamodb table defined in the above config file.

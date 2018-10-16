@@ -2,11 +2,11 @@ from pkg_resources import iter_entry_points
 
 
 class Services(object):
-    def __init__(self, session, services, cache, proposals):
+    def __init__(self, session, services, cache, proposals, resource_id):
 
         init_params = {
             'session': session, 'table': proposals,
-            'cache': cache
+            'cache': cache, 'resource_id': resource_id
         }
         self._mapping = list(map(
             lambda ep: ep.load()(**init_params).load(),
@@ -29,4 +29,4 @@ class Services(object):
         else:
             raise StopIteration()
 
-    next = __next__ # Python2 backwards compatibility
+    next = __next__  # Python2 backwards compatibility

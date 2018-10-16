@@ -3,6 +3,7 @@ import sys
 from operator import itemgetter
 from tabulate import tabulate
 from tag_a_day.cache import ProgressCache
+from tag_a_day.config import Configuration
 from tag_a_day.log import logger
 
 try:
@@ -17,12 +18,13 @@ class Service(object):
     skip_text = "Skipping '{0}' as it has been evaluated\n\n"
     missing_tags_text = ''
 
-    def __init__(self, session, table, cache):
+    def __init__(self, session, table, cache, resource_id):
         self._session = session
         self._proposals = table
         self._cache = cache
         self._proposer = ''
         self._progress = None
+        self._resource_id = resource_id
 
     def load(self):
         self._proposer = self._session().client('sts').get_caller_identity().get('Arn')
@@ -61,7 +63,7 @@ class Service(object):
         print(self.skip_text.format(resource_id))
 
     def _build_tag_prompt(self, missing_tags):
-        sys.stdout.write(self.missing_tags_text.format(
+        sys.stdout.write((self.missing_tags_text + "\n").format(
             "','".join(missing_tags)))
 
         # Build padding for easier to read prompt
@@ -84,7 +86,7 @@ class Service(object):
     def run(self, expected_tags, region, session):
         logger().info("Auditing in region: {region}".format(region=region))
         with self._proposals.batch_writer() as proposals:
-            for resource in self.resources(session):
+            for resource in self.resources(session, Configuration.process_list(self._resource_id)):
                 handled_tag = False
                 for item in self.handler(resource, expected_tags, region, session, self._cache, proposals):
                     handled_tag = True
@@ -95,7 +97,7 @@ class Service(object):
                     print("\n\n")
 
     @abc.abstractmethod
-    def resources(self, session):
+    def resources(self, session, resource_id):
         raise NotImplementedError
 
     @abc.abstractmethod

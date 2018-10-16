@@ -1,3 +1,4 @@
+from tag_a_day.config import Configuration
 from tag_a_day.services.service import Service
 
 
@@ -5,11 +6,18 @@ class RDSTagHandler(Service):
     name = 'rds_instance'
     missing_tags_text = "This instance is missing '{0}' in its tags"
 
-    def resources(self, session):
+    def resources(self, session, resource_ids):
+        page_args = {}
+        if resource_ids is not None:
+            page_args['Filters'] = [{
+                'Name': 'db-instance-id',
+                'Values': resource_ids
+            }]
+
         rds = session.client('rds')
         paginator = rds. \
             get_paginator('describe_db_instances'). \
-            paginate()
+            paginate(**page_args)
         for instances_page in paginator:
             # Randomly pick 2/3rds of the nodes
             for instance in self._random_choose(instances_page['DBInstances']):
