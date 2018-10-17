@@ -35,6 +35,7 @@ required-tags:
 - Name
 - Service
 - Availability
+- Stack
 EOY
 
 # Create dynamodb table defined in the above config file.
