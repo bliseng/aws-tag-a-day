@@ -23,7 +23,8 @@ setup(
         'hconf',
         'pyyaml',
         'boto3',
-        'setuptools>=13'
+        'setuptools>=13',
+        'six'
     ],
     setup_requires=["pytest-runner", "twine", "wheel", 'setuptools>=13'],
     tests_require=["pytest"],
