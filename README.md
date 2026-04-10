@@ -30,12 +30,23 @@ regions:
 - ap-southeast-1
 - ap-northeast-1
 required-tags:
-- Project
-- Owner
-- Name
-- Service
-- Availability
-- Stack
+- key: Stack
+  categories:
+  - "Production"
+  - "Development"
+  - "Testing"
+  - "External Testing"
+  - "Release Candidate"
+  - "Archive"
+- key: Project
+- key: Owner
+- key: Name
+- key: Service
+- key: Availability  
+  categories:
+  - "24/7"
+  - "As needed"
+  - "Never"
 EOY
 
 # Create dynamodb table defined in the above config file.

@@ -3,3 +3,4 @@ hconf
 pyyaml
 boto3
 setuptools>=13
+six

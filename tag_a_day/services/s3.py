@@ -46,5 +46,5 @@ class S3TagHandler(Service):
                 yield {
                     'resource_id': bucket.name,
                     'tag_key': tag_key,
-                    'tag_value': tag_prompt(tag_key)
+                    'tag_value': tag_prompt(tag_key).value
                 }

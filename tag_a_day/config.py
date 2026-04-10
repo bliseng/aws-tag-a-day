@@ -1,6 +1,10 @@
+import json
 import os
 
 import hconf
+from six import string_types
+
+from tag_a_day.tag_types import TagCategorical, TagString
 
 
 class Configuration(hconf.ConfigManager):
@@ -12,6 +16,31 @@ class Configuration(hconf.ConfigManager):
         if type(data) == list:
             return data
         return data.split(',')
+
+    @staticmethod
+    def process_tag_list(data):
+        response_data = data
+        if isinstance(response_data, string_types):
+            try:
+                response_data = json.loads(data)
+            except ValueError as e:
+                response_data = Configuration.process_list(data)
+        result = []
+        for entry in response_data:
+            if type(entry) != dict:
+                result.append({
+                    'key': entry
+                })
+            else:
+                result.append(entry)
+
+        tags = []
+        for raw_tag in result:
+            if 'categories' in raw_tag:
+                tags.append(TagCategorical(**raw_tag))
+            else:
+                tags.append(TagString(**raw_tag))
+        return tags
 
     def __init__(self, session):
         self._session = session
@@ -28,7 +57,7 @@ class Configuration(hconf.ConfigManager):
              'required': False,
              'description': 'Comma separated list of resources to audit tags on'},
             {'name': 'required-tags',
-             'required': True, 'cast': self.process_list,
+             'required': True, 'cast': self.process_tag_list,
              'description': 'List of tags which must exist'},
             {'name': 'dynamodb-table-name',
              'required': True,

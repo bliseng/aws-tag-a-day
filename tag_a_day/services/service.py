@@ -5,6 +5,7 @@ from tabulate import tabulate
 from tag_a_day.cache import ProgressCache
 from tag_a_day.config import Configuration
 from tag_a_day.log import logger
+from tag_a_day.tag_types import Tag
 
 try:
     input = raw_input
@@ -14,7 +15,6 @@ except NameError:
 
 class Service(object):
     name = None
-    prompt_text = "Propose a value for the '{0}' tag: "
     skip_text = "Skipping '{0}' as it has been evaluated\n\n"
     missing_tags_text = ''
     user_skip_prompt = 'Do you wish to propose tags for this resource? [y/N] '
@@ -73,25 +73,14 @@ class Service(object):
         return skip
 
     def _build_tag_prompt(self, missing_tags):
+        tag_keys = [tag.key for tag in missing_tags]
         sys.stdout.write((self.missing_tags_text + "\n").format(
-            "','".join(missing_tags)))
+            "', '".join(tag_keys)))
 
         # Build padding for easier to read prompt
-        longest_key = len(max(missing_tags, key=len))
-        justify_length = len(self.prompt_text) + longest_key
+        longest_prompt = max([tag.prompt_width for tag in missing_tags])
 
-        def tag_prompt(tag_key):
-            sys.stdout.write(self.prompt_text.format(
-                tag_key).ljust(justify_length))
-            sys.stdout.flush()
-            response = input()
-            if len(response) < 1:
-                print("Tag must not be empty")
-                return tag_prompt(tag_key)
-            else:
-                return response
-
-        return tag_prompt
+        return lambda tag: tag.get_user_proposal(longest_prompt)
 
     def run(self, expected_tags, region, session):
         logger().info("Auditing in region: {region}".format(region=region))
