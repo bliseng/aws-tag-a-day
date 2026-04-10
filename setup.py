@@ -30,7 +30,8 @@ setup(
     entry_points={
         'console_scripts': [
             'tag-a-day = tag_a_day.cli:run',
-            'tag-a-day-initialise = tag_a_day.cli:initialise'
+            'tag-a-day-initialise = tag_a_day.cli:initialise',
+            'tag-a-day-reconcile = tag_a_day.cli:reconcile'
         ],
         'tag_a_day.tag_handlers': [
             'ec2 = tag_a_day.services.ec2:EC2TagHandler',

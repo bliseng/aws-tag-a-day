@@ -4,6 +4,7 @@ import time
 from boto3 import Session
 from botocore.exceptions import ClientError
 
+from tag_a_day.actions.reconcile import Reconcile
 from tag_a_day.cache import AWSCache
 from tag_a_day.config import Configuration
 from tag_a_day.services import Services
@@ -42,6 +43,8 @@ def run():
                 session=session
             )
 
+def reconcile():
+    Reconcile().run()
 
 def initialise():
     aws_session, conf = _initialise_common()
